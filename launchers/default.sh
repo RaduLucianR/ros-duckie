@@ -16,7 +16,8 @@ dt-launchfile-init
 #dt-exec echo "This is an empty launch script. Update it to launch your application."
 #roscore &
 #sleep 5
-dt-exec rosrun my_package velocity_controller.py
+#dt-exec rosrun my_package velocity_controller.py
+dt-exec roslaunch object_detection object_detection_node.launch veh:=$VEHICLE_NAME
 
 
 # ----------------------------------------------------------------------------

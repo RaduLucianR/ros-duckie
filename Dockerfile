@@ -19,7 +19,7 @@ FROM ${DOCKER_REGISTRY}/duckietown/${BASE_IMAGE}:${BASE_TAG} as BASE
 
 # recall all arguments
 ARG ARCH
-ARG DISTRO
+ARG DISTRO=daffy
 ARG REPO_NAME
 ARG DESCRIPTION
 ARG MAINTAINER
@@ -47,6 +47,10 @@ ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 ENV DT_LAUNCHER "${LAUNCHER}"
 
+# generic environment
+ENV LANG C.UTF-8
+
+
 # install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
@@ -57,6 +61,24 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./dependencies-py3.* "${REPO_PATH}/"
 RUN python3 -m pip install  -r ${REPO_PATH}/dependencies-py3.txt
+#########################################################
+# Mute the annoying warning about detach HEAD
+
+RUN git config --global advice.detachedHead false
+
+# clean environment
+RUN pip3 uninstall -y dataclasses
+#############################
+
+# download YOLOv5 model (weights will be downloaded from DCSS)
+RUN git clone -b v7.0 https://github.com/ultralytics/yolov5 "/yolov5"
+
+# copy the assets (meat)
+#COPY --from=meat ./assets/. "${REPO_PATH}/assets/"
+
+# copy the source code (meat)
+#COPY --from=meat ./packages/. "${REPO_PATH}/packages/"
+
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
@@ -86,3 +108,6 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.maintainer="${MAINTAINER}"
 # <== Do not change the code above this line
 # <==================================================
+
+# disable YOLOv5 auto-update
+ENV YOLOv5_AUTOINSTALL=false

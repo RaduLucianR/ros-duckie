@@ -1,1 +1,33 @@
 # LIST YOUR APT PACKAGES HERE
+
+python3-pip
+cmake
+libopenblas-dev
+gcc-7
+g++-7
+
+# Torchvision
+libjpeg-dev
+zlib1g-dev
+
+# Bazel Dependencies
+curl 
+unzip 
+openjdk-11-jdk
+
+# Tensorflow Dependencies
+build-essential
+make
+cmake
+wget
+zip
+unzip
+libhdf5-dev
+libc-ares-dev
+libeigen3-dev
+libatlas-base-dev
+libopenblas-dev
+libblas-dev
+gfortran
+liblapack-dev
+python3-h5py

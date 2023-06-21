@@ -41,6 +41,8 @@ class VelocityControllerNode(DTROS):
         message2.vel_left = 0
         message2.vel_right = 0
         
+    #def on_shutdown()
+        
         
 
 if __name__ == '__main__':
