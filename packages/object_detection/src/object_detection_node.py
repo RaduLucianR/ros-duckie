@@ -66,7 +66,7 @@ class ObjectDetectionNode(DTROS):
         )
 
         self.bridge = CvBridge()
-        self.initial_speed = 0.1
+        self.initial_speed = 0.4
         self.v = rospy.get_param("~speed", 0.0)
         aido_eval = rospy.get_param("~AIDO_eval", False)
         self.log(f"AIDO EVAL VAR: {aido_eval}")
@@ -85,12 +85,6 @@ class ObjectDetectionNode(DTROS):
         self.log("Initialized!")
 
         rospy.on_shutdown(self._on_shutdown)
-
-    # def cb_episode_start(self, msg: EpisodeStart):
-    #     #self.avoid_duckies = False
-    #     self.detected_class = 1000000
-    #     #self.pub_car_commands(True, msg.header)
-    #     self.pub_car_commands(14, msg.header) # to stop
 
     def image_cb(self, image_msg):
         if not self.initialized:
@@ -124,56 +118,6 @@ class ObjectDetectionNode(DTROS):
         bboxes, classes, scores = self.model_wrapper.predict(rgb)
 
         detection = self.det2bool(bboxes, classes, scores)
-
-        # as soon as we get one detection we will stop forever
-        # if detection:
-        #     self.log("Duckie pedestrian detected... stopping")
-        #     self.avoid_duckies = True
-        #     print(classes)
-        #     self.log("CLass %d", classes)
-        #detection = True
-        #print(classes)
-        # print("self.stop outside if is", str(self.stopped))
-        # print("time stop outside if is", str(self.time_begin_stop))
-        # print("self.speed lim outside if is", str(self.following_speed_lim))
-        # print("time speed lim outside if is", str(self.time_begin_speed_lim))
-        # print("diff stop is", rospy.get_time())
-        # #print("diff inside is %f", (rospy.get_time() - self.time_begin_speed_lim))
-
-        # if self.stopped and (self.time_begin_stop != 0) and ((rospy.get_time()) - self.time_begin_stop > 4):
-        #     print("self.stop inside is", str(self.stopped))
-        #     print("time stop inside is", str(self.time_begin_stop))
-        #     print("duration inside is", str(4))
-
-        #     print("Rospy time inside is", rospy.get_time())
-        #     #print("diff inside is", str(rospy.get_time() - self.time_begin_stop))
-        #     car_control_msg = Twist2DStamped()
-        #     car_control_msg.v = self.initial_speed
-        #     car_control_msg.omega = 0.0
-        #     self.pub_car_cmd.publish(car_control_msg)
-        #     self.stopped = False
-        #     self.time_begin_stop = 0
-
-        # if self.following_speed_lim and (self.time_begin_speed_lim != 0) and ((rospy.get_time()) - self.time_begin_speed_lim > 4):
-        #     print("self.speed lim inside is", str(self.following_speed_lim))
-        #     print("time speed lim inside is", str(self.time_begin_speed_lim))
-        #     print("duration inside is", str(4))
-        #     print("diff inside is ", rospy.get_time())
-        #     car_control_msg = Twist2DStamped()
-        #     car_control_msg.v = self.initial_speed
-        #     car_control_msg.omega = 0.0
-        #     self.pub_car_cmd.publish(car_control_msg)
-        #     self.following_speed_lim = False
-        #     self.time_begin_speed_lim = 0
-        # if self.stopped:
-        #     car_control_msg = Twist2DStamped()
-        #     car_control_msg.v = self.initial_speed
-        #     car_control_msg.omega = 0.0
-        #     self.pub_car_cmd.publish(car_control_msg)
-        #     self.stopped = False
-        # if self.following_speed_lim:
-        #     rospy.sleep(4)
-        #     self.following_speed_lim = False
 
         if detection and ((classes[0] == 0) or (classes[0] == 1) or (classes[0] == 2)):
             self.log("20 km/h speed limit sign detected .. slowing down to 20 km/h")
@@ -259,16 +203,16 @@ class ObjectDetectionNode(DTROS):
             self.time_begin_stop =  rospy.get_time()
         elif detected_class == 0: # speed lim
             #car_control_msg.v = self.v
-            car_control_msg.v = 0.2
+            car_control_msg.v = 0.3
             car_control_msg.omega = 0.0
             #self.following_speed_lim = True
             self.time_begin_speed_lim =  rospy.get_time() 
         elif detected_class == 4: # right
-            car_control_msg.v = 0.1 #self.initial_speed
-            car_control_msg.omega = -2
+            car_control_msg.v = 0.4 #self.initial_speed
+            car_control_msg.omega = -12
         elif detected_class == 5: #left
-            car_control_msg.v = 0.1 #self.initial_speed
-            car_control_msg.omega = 2
+            car_control_msg.v = 0.6 #self.initial_speed
+            car_control_msg.omega = 40
         else:
             car_control_msg.v = self.initial_speed
             car_control_msg.omega = 0.0

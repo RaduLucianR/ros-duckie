@@ -37,13 +37,7 @@ def filter_by_classes(pred_class: int) -> bool:
     Args:
         pred_class: the class of a prediction
     """
-    # Right now, this returns True for every object's class
-    # TODO: Change this to only return True for duckies!
-    # In other words, returning False means that this prediction is ignored.
-    if pred_class == 14:
-        return True
-    else:
-        return True
+
     return True
 
 
@@ -55,12 +49,12 @@ def filter_by_scores(score: float) -> bool:
     # Right now, this returns True for every object's confidence
     # TODO: Change this to filter the scores, or not at all
     # (returning True for all of them might be the right thing to do!)
-    #print("score:", score)
-    if score < 0.4:
-        return False
-    else:
+    print("score:", score)
+
+    if score > 0.75:
         return True
-    return True
+
+    return False
 
 
 def filter_by_bboxes(bbox: Tuple[int, int, int, int]) -> bool:
@@ -71,22 +65,13 @@ def filter_by_bboxes(bbox: Tuple[int, int, int, int]) -> bool:
     """
     # TODO: Like in the other cases, return False if the bbox should not be considered.
     #size of image 416x416
-    #print("x: %d\n", (abs(bbox[2] - bbox[0])))
-    #print("y: %d\n", (abs(bbox[1] - bbox[3])))
-    # print("x:", str(abs(bbox[2] - bbox[0])))
-    # print("y:", str(abs(bbox[1] - bbox[3])))
-    #print("area of box:", str(abs(bbox[2] - bbox[0])*abs(bbox[1]-bbox[3])))
-    #print("area of string: %d\n", (abs(bbox[2] - bbox[0])*abs(bbox[1]-bbox[3])))
-    # if ((bbox[0] <= 416/3) or (bbox[2] >= 2*(416/3)) or ((abs(bbox[2] - bbox[0])*abs(bbox[1]-bbox[3])) <= 0.05*(416*416))):
-    #     return False
-    # else:
-    #     return True 
-    # if ((abs(bbox[2] - bbox[0])*abs(bbox[1]-bbox[3])) <= 0.2*(416*416)):
-    #    return False
-    # else:
-    #    return True
+    print("x:", str(abs(bbox[2] - bbox[0])))
+    print("y:", str(abs(bbox[1] - bbox[3])))
+
+    if ((abs(bbox[2] - bbox[0]) < 35) or (abs(bbox[1]-bbox[3])) < 50):
+       return False
+
     if ((abs(bbox[2] - bbox[0]) > 300) or (abs(bbox[1]-bbox[3])) > 300):
        return False
-    else:
-       return True
+    
     return True
