@@ -10,7 +10,7 @@ This project is a fork of the duckietown/template-ros repository that is a boile
 4. Run the project on the Duckiebot using:
    `dts devel run -H db6.local`
 ## Additions over the template
-The traffic signs are random images from the internet. 
+The dataset that we trained the YOLOv5 model on can be found here [ADD PATH]. We trained a nano YOLOv5 model using Google Colab for 100 epochs. The dataset contains 4 traffic signs and duckies. The 4 traffic signs are: turn right ahead, turn left ahead, 20km speed limit and stop. The traffic signs are random images from the internet. 
 
 We obtained a dataset of traffic signs from Roboflow that can be accessed [ADD LINK].
 
