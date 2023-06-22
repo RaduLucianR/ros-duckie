@@ -6,7 +6,6 @@ import numpy as np
 import torch
 
 from dt_data_api import DataClient
-#from integration_activity import MODEL_NAME, DT_TOKEN
 
 from dt_device_utils import DeviceHardwareBrand, get_device_hardware_brand
 
@@ -14,15 +13,8 @@ from .constants import IMAGE_SIZE, ASSETS_DIR
 
 JETSON_FP16 = False
 
-def DT_TOKEN() -> str:
-    # TODO: change this to your duckietown token
-    dt_token = "dt1-3nT8KSoxVh4MnCdNw2Ch8NVrnJeQ3wLj14CryH3kh1g5RjA-43dzqWFnWd8KBa1yev1g3UKnzVxZkkTbfbcNqTXWiUkMahkap2RM6k7mgx2wPKJ766"
-    return dt_token
-
-
 def MODEL_NAME() -> str:
-    # TODO: change this to your model's name that you used to upload it on google colab.
-    # if you didn't change it, it should be "yolov5n"
+    # place the model name here
     return "ourdatasetWithDuckies"
 
 def run(input, exception_on_failure=False):
@@ -47,75 +39,16 @@ class Wrapper:
         model_name = MODEL_NAME()
 
         models_path = os.path.join(ASSETS_DIR, "nn_models")
-        #models_path = "weights/"
         dcss_models_path = "courses/mooc/objdet/data/nn_models/"
         dcss_weight_file_path = os.path.join(dcss_models_path, f"{model_name}.pt")
         weight_file_path = os.path.join(models_path, f"{model_name}.pt")
-
-
-        #if aido_eval:
-        if 1:
-            #assert os.path.exists(weight_file_path)
-            models_path = "/code/catkin_ws/src/ros-six/packages/nn_model/weights/"
-            weight_file_path = os.path.join(models_path, f"{model_name}.pt")
-        else:
-            dt_token = DT_TOKEN()
-
-            if get_device_hardware_brand() == DeviceHardwareBrand.JETSON_NANO:
-                # when running on the robot, we store models in the persistent `data` directory
-                models_path = "/data/nn_models"
-                weight_file_path = os.path.join(models_path, f"{model_name}.pt")
-
-            # make models destination dir if it does not exist
-            if not os.path.exists(models_path):
-               os.makedirs(models_path)
-
-            #open a pointer to the DCSS storage unit
-            client = DataClient(dt_token)
-            storage = client.storage("user")
-
-            #make sure the model exists
-            metadata = None
-            try:
-               metadata = storage.head(dcss_weight_file_path)
-            except FileNotFoundError:
-               print(f"FATAL: Model '{model_name}' not found. It was expected at '{dcss_weight_file_path}'.")
-               exit(1)
-
-            #extract current ETag
-            remote_etag = eval(metadata["ETag"])
-            print(f"Remote ETag for model '{model_name}': {remote_etag}")
-
-            #read local etag
-            local_etag = None
-            etag_file_path = f"{weight_file_path}.etag"
-            if os.path.exists(etag_file_path):
-               with open(etag_file_path, "rt") as fin:
-                   local_etag = fin.read().strip()
-               print(f"Found local ETag for model '{model_name}': {local_etag}")
-            else:
-               print(f"No local model found with name '{model_name}'")
-
-            #do not download if already up-to-date
-            print(f"DEBUG: Comparing [{local_etag}] <> [{remote_etag}]")
-            if local_etag != remote_etag:
-                if local_etag:
-                    print(f"Found a different model on DCSS.")
-                print(f"Downloading model '{model_name}' from DCSS...")
-                # download model
-                download = storage.download(dcss_weight_file_path, weight_file_path, force=True)
-                download.join()
-                assert os.path.exists(weight_file_path)
-                # write ETag to file
-                with open(etag_file_path, "wt") as fout:
-                    fout.write(remote_etag)
-                print(f"Model with ETag '{remote_etag}' downloaded!")
-            else:
-                print(f"Local model is up-to-date!")
+        models_path = "/code/catkin_ws/src/ros-six/packages/nn_model/weights/"
+        weight_file_path = os.path.join(models_path, f"{model_name}.pt")
 
         # load pytorch model
         self.model = Model(weight_file_path)
-        #self.model = Model("weights/best.pt")
+
+        
     def predict(self, image: np.ndarray) -> Tuple[list, list, list]:
         return self.model.infer(image)
 
