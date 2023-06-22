@@ -11,6 +11,9 @@ This project is a fork of the duckietown/template-ros repository that is a boile
    `dts devel run -H db6.local`
 ## Additions over the template
 The traffic signs are random images from the internet. 
+
 We obtained a dataset of traffic signs from Roboflow that can be accessed [ADD LINK].
+
 We extended it with images of the printed traffic signs taken by our phones and by the Duckiebot camera itself. We annotated our images with Roboflow. Our annotated images are available here [https://universe.roboflow.com/whatever-7klrp/traffic-sign-hmdah/dataset/1].
+
 The dataset was further extended with images of duckies from the Duckietown project.
